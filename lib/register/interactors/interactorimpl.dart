@@ -1,7 +1,7 @@
-import 'package:onlinetest/interactors/interactor.dart';
 import 'package:onlinetest/models/usermodel.dart';
 
-import '../repository/repository.dart';
+import '../../register/repository/repository.dart';
+import 'interactor.dart';
 
 class InteractorImpl extends Interactor {
 
@@ -15,11 +15,12 @@ class InteractorImpl extends Interactor {
   User get user => _user;
 
   @override
-  Future<bool> login(User user) async {
+  Future<bool> adduser(User user) async {
 
-    final res = await repository.login(user);
+    final res = await repository.adduser(user);
 
     return res;
+
   }
 
 }

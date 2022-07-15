@@ -32,11 +32,13 @@ class DBHelper {
     await db.execute(query);
   }
 
-  Future<dynamic> createNewUser(User user) async {
+  Future<bool> createNewUser(User user) async {
     final dbget = await db;
     var res = await dbget.rawInsert(
         "INSERT Into users (username, password) VALUES ('${user.username}','${user.password}')");
-    return res;
+    //print (res);
+    if (res != 0) return true;  
+    return false;
   }
 
   Future<bool> loginByUsernameAndPassword(User user) async {
@@ -46,9 +48,7 @@ class DBHelper {
         where: "username = ? and password = ?",
         whereArgs: [user.username, user.password]);
 
-    if (res.length != 0) {
-      return true;
-    }
+    if (res.length != 0) return true;
 
     return false;
     // return User.fromMap(res[0]).password.toString();

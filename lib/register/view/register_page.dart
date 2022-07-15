@@ -1,42 +1,45 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:onlinetest/register/view/register_page.dart';
+import 'package:onlinetest/login/view/login_page.dart';
+import 'package:onlinetest/register/bloc/register_bloc.dart';
 
-import '../bloc/login_bloc.dart';
+import '../../models/usermodel.dart';
+import '../../viewmodels/registerviewmodel.dart';
 
-class LoginPage extends StatefulWidget {
+class RegisterPage extends StatefulWidget {
   @override
-  _LoginPageState createState() => _LoginPageState();
+  _RegisterPageState createState() => _RegisterPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _RegisterPageState extends State<RegisterPage> {
+  final usernameController = TextEditingController();
+  final passwordController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
-    return
-      MultiBlocProvider(
-        providers: [BlocProvider(create: (context) => LoginBloc())],
-        child: Scaffold(backgroundColor: Colors.white, body: LoginForm())
-      );
+    return MultiBlocProvider(
+        providers: [BlocProvider(create: (context) => RegisterBloc())],
+        child: Scaffold(backgroundColor: Colors.white, body: RegisterForm()));
   }
 }
 
-class LoginForm extends StatelessWidget {
-  LoginForm({Key? key}) : super(key: key);
+class RegisterForm extends StatelessWidget {
+  RegisterForm({Key? key}) : super(key: key);
 
   final usernameController = TextEditingController();
   final passwordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<LoginBloc, LoginState>(
+    return BlocListener<RegisterBloc, RegisterState>(
       listener: (context, state) {
-        if (state is LoginSuccess) {
+        if (state is RegisterSuccess) {
           ScaffoldMessenger.of(context)
-              .showSnackBar(const SnackBar(content: Text('Login Success')));
+              .showSnackBar(const SnackBar(content: Text('Register Success')));
         }
-        if (state is LoginFailed) {
+        if (state is RegisterFailed) {
           ScaffoldMessenger.of(context)
-              .showSnackBar(const SnackBar(content: Text('Login Failed')));
+              .showSnackBar(const SnackBar(content: Text('Register Failed')));
         }
       },
       child: Center(
@@ -46,7 +49,7 @@ class LoginForm extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Text(
-              "LOGIN",
+              "REGISTER",
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30.0),
             ),
             SizedBox(height: 50),
@@ -54,53 +57,49 @@ class LoginForm extends StatelessWidget {
             SizedBox(height: 20),
             passwordField(),
             SizedBox(height: 20),
-            loginButton(context),
+            registerButton(context),
             SizedBox(height: 30),
-            textButton(context),
+            TextButton(
+              onPressed: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => LoginPage()));
+              },
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Text(
+                    "Have an account? ",
+                    style: TextStyle(color: Colors.black),
+                  ),
+                  Text(
+                    "Login here",
+                    style: TextStyle(color: Colors.amber),
+                  )
+                ],
+              ),
+            )
           ],
         ),
       )),
     );
   }
 
-  Widget loginButton(BuildContext context) {
+  Widget registerButton(BuildContext context) {
     return ElevatedButton(
       onPressed: () {
-        context.read<LoginBloc>().add(
-              LoginSubmit(
-                  username: usernameController.text,
-                  password: passwordController.text),
-            );
+        context.read<RegisterBloc>().add(
+          AddUser(
+              username: usernameController.text,
+              password: passwordController.text),
+        );
       },
       child: Text(
-        "LOGIN",
+        "REGISTER",
         style: TextStyle(color: Colors.white),
       ),
       style: ElevatedButton.styleFrom(
         minimumSize: const Size.fromHeight(50),
         primary: Colors.amber,
-      ),
-    );
-  }
-
-  Widget textButton(BuildContext context) {
-    return TextButton(
-      onPressed: () {
-        Navigator.push(
-            context, MaterialPageRoute(builder: (context) => RegisterPage()));
-      },
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          Text(
-            "Don't have an account? ",
-            style: TextStyle(color: Colors.black),
-          ),
-          Text(
-            "Register here",
-            style: TextStyle(color: Colors.amber),
-          )
-        ],
       ),
     );
   }
